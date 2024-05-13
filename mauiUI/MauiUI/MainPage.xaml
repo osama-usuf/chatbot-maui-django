@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiUI.MainPage"
+             xmlns:viewmodel="clr-namespace:MauiUI.ViewModel"
+             x:DataType="viewmodel:MainViewModel">
+
+    <!-- https://learn.microsoft.com/en-us/dotnet/maui/user-interface/layouts/grid?view=net-maui-8.0 -->
+    <Grid Padding="10" 
+          RowDefinitions=".2*, 0.07*, 0.73*"
+          ColumnDefinitions=".75*, .25*"
+          RowSpacing="10"
+          ColumnSpacing="10">
+
+        <Image Source="dotnet_bot.png"
+               BackgroundColor="Transparent"
+               Grid.Row="0"
+               Grid.ColumnSpan="2"></Image>
+
+        <Entry Placeholder="Enter item" 
+               Grid.Row="1"
+               Grid.ColumnSpan="1"
+               Text="{Binding Text}"
+               ></Entry>
+
+        <Button Grid.Row="1"
+                Grid.Column="2"
+                Text="Add"
+                Command="{Binding AddCommand}"></Button>
+
+        <StackLayout Grid.Row="2" Grid.ColumnSpan="2" IsVisible="{Binding IsBusy}" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
+            <ActivityIndicator IsRunning="{Binding IsBusy}"/>
+            <Label Text="Fetching data.."/> 
+        </StackLayout>
+
+        <StackLayout IsVisible="{Binding FetchError}" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand"  Grid.Row="2" Grid.ColumnSpan="2">
+            <Label Text="Unable to retrieve data." HorizontalTextAlignment="Center" VerticalTextAlignment="Center" Padding="10"/>
+            <Button 
+                    Text="Refresh"
+                    Command="{Binding RefreshCommand}"></Button>
+        </StackLayout>
+
+        <CollectionView Grid.Row="2" Grid.ColumnSpan="2" 
+                        IsVisible="{Binding IsDisplayReady}"
+                        ItemsSource="{Binding Items}"
+                        SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="{x:Type x:String}">
+                    <SwipeView>
+                        <SwipeView.RightItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Delete" BackgroundColor="Red"
+                                           Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MainViewModel}}, Path=RemoveCommand}"
+                                           CommandParameter="{Binding .}"></SwipeItem>
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+                        <Grid Padding="0, 5">
+                            <Frame>
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer 
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MainViewModel}}, Path=TapCommand}"
+                                        CommandParameter="{Binding .}"/>
+                                </Frame.GestureRecognizers>
+                                <Label Text="{Binding .}" FontSize="16"></Label>
+                            </Frame>
+                        </Grid>
+                    </SwipeView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+
+
+        </CollectionView>
+
+        
+    </Grid>
+
+</ContentPage>
