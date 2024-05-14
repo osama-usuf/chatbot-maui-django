@@ -13,11 +13,12 @@
                 <TableSection>
                     <EntryCell Label="Item ID" Text="{Binding Item.Pk}" IsEnabled="False" />
                     <EntryCell Label="Item Name" Text="{Binding Item.Name}" />
+                    <EntryCell Label="Item Details" Text="{Binding Item.Details}" />
                 </TableSection>
             </TableRoot>
         </TableView>
 
-        <Button Text="Save" Grid.Row="1" Grid.Column="0" Command="{Binding SaveCommand}" Margin="20,0"/>
+        <Button Text="Save" Grid.Row="1" Grid.Column="0" Command="{Binding UpdateCommand}" Margin="20,0"/>
         <Button Text="Delete" Grid.Row="1" Grid.Column="1" Command="{Binding DeleteCommand}"/>
         <Button Text="Go Back" Grid.Row="1" Grid.Column="2" Command="{Binding GoBackCommand}" Margin="20,0"/>
 

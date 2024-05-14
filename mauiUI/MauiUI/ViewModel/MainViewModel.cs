@@ -117,12 +117,15 @@ public partial class MainViewModel : ObservableObject
 
 
     [RelayCommand]
-    void Remove(string s)
+    async Task Remove(int Pk)
     {
-        //if (ItemNames.Contains(s))
-        //{
-        //    ItemNames.Remove(s);
-        //}
+        bool success = await ItemAPI.Delete(Pk);
+
+        if (success)
+        {
+            WeakReferenceMessenger.Default.Send(new RefreshMessage(true));
+            await Refresh();
+        }
     }
 
     [RelayCommand]

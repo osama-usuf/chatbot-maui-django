@@ -14,7 +14,7 @@ public static class ItemAPI
 
     // if android emulator, use 10.0.2.2 https://developer.android.com/studio/run/emulator-networking can be used, otherwise, use address of host device directly
     //static readonly string BaseAddress = "http://10.0.2.2:8000";
-    static readonly string BaseAddress = "http://localhost:8000";
+    static readonly string BaseAddress = "http://192.168.1.159:8000";
     static readonly string Url = $"{BaseAddress}/items/";
 
     static HttpClient client;
@@ -110,9 +110,33 @@ public static class ItemAPI
         return (result, success);
     }
 
-    public static async Task Update(String item)
+    public static async Task<(List<Item>, bool)> Update(Item item)
     {
-        throw new NotImplementedException();
+        var result = new List<Item>();
+        bool success = false;
+        if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+        {
+            await Shell.Current.DisplayAlert("Uh Oh!", "No internet", "OK");
+        }
+        else
+        {
+            try
+            {
+                var client = await GetClient();
+                string json = JsonSerializer.Serialize<Item>(item, _serializerOptions);
+                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await client.PutAsync($"{Url}{item.Pk}/", content);
+                if (response.IsSuccessStatusCode)
+                {
+                    success = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(@"\tERROR {0}", ex.Message);
+            }
+        }
+        return (result, success);
     }
 
     public static async Task<bool> Delete(int itemPK)

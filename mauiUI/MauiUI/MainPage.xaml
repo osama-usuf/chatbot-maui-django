@@ -46,13 +46,13 @@
                 <!--<DataTemplate x:DataType="{x:Type x:String}">-->
                 <DataTemplate x:DataType="data:Item">
                     <SwipeView>
-                        <!--<SwipeView.RightItems>
+                        <SwipeView.RightItems>
                             <SwipeItems>
                                 <SwipeItem Text="Delete" BackgroundColor="Red"
                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MainViewModel}}, Path=RemoveCommand}"
-                                           CommandParameter="{Binding .}"></SwipeItem>
+                                           CommandParameter="{Binding Pk}"></SwipeItem>
                             </SwipeItems>
-                        </SwipeView.RightItems>-->
+                        </SwipeView.RightItems>
                         <Grid Padding="0, 5">
                             <Frame>
                                 <Frame.GestureRecognizers>

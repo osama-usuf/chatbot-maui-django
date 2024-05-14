@@ -27,9 +27,15 @@ public partial class DetailViewModel : ObservableObject
     }
 
     [RelayCommand]
-    async Task Save()
+    async Task Update()
     {
-        throw new NotImplementedException();
+        var (result, success) = await ItemAPI.Update(Item);
+
+        if (success)
+        {
+            WeakReferenceMessenger.Default.Send(new RefreshMessage(true));
+            await GoBack();
+        }
     }
 
     [RelayCommand]
