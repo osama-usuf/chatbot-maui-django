@@ -9,7 +9,7 @@ from django.db import models
 
 class Item(models.Model):
     name = models.CharField(max_length=50)
-    details = models.TextField(max_length=100)
+    details = models.TextField(max_length=100, null=True)
     date_added = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

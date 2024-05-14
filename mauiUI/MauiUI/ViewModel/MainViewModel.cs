@@ -9,12 +9,16 @@ namespace MauiUI.ViewModel;
 public partial class MainViewModel : ObservableObject
 {
     IConnectivity connectivity;
+
     public MainViewModel(IConnectivity connectivity)
     {
         this.connectivity = connectivity;
 
-        Items = new ObservableCollection<String>();
+        //ItemNames = new ObservableCollection<String>();
+        Items = new ObservableCollection<Item>();
 
+        // register a messenger so that we can refresh from other views
+        // useful when the object is updated (altered, deleted, etc.) and the list on main page has to be updated
         WeakReferenceMessenger.Default.Register<RefreshMessage>(this, async (r, m) =>
         {
             await LoadData();
@@ -44,8 +48,11 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     bool _addError = false;
 
+    //[ObservableProperty]
+    //ObservableCollection<String> itemNames;
+
     [ObservableProperty]
-    ObservableCollection<String> items;
+    ObservableCollection<Item> items;
 
     [RelayCommand]
     async Task LoadData()
@@ -64,10 +71,12 @@ public partial class MainViewModel : ObservableObject
 
         MainThread.BeginInvokeOnMainThread(() =>
         {
+            //ItemNames.Clear();
             Items.Clear();
             foreach (Item item in itemsCollection)
             {
-                Items.Add(item.Name);
+                Items.Add(item);
+                //ItemNames.Add(item.Name);
             }
         });
 
@@ -110,16 +119,20 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     void Remove(string s)
     {
-        if (Items.Contains(s))
-        {
-            Items.Remove(s);
-        }
+        //if (ItemNames.Contains(s))
+        //{
+        //    ItemNames.Remove(s);
+        //}
     }
 
     [RelayCommand]
-    async Task Tap(string s)
+    async Task Tap(Item item)
     {
-        await Shell.Current.GoToAsync($"{nameof(DetailPage)}?Text={s}"); // seding simple query property
+        var navParam = new Dictionary<string, object>()
+        {
+            { "Item", item }
+        };
+        //await Shell.Current.GoToAsync($"{nameof(DetailPage)}?Text={s}"); // seding simple query property, [QueryProperty] has to be added to destination view model for correct source gen
+        await Shell.Current.GoToAsync(nameof(DetailPage), navParam); // seding simple query property
     }
-
 }

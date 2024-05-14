@@ -56,13 +56,21 @@ public static class ItemAPI
             var client = await GetClient();
             try
             {
-                HttpResponseMessage response = await client.GetAsync(Url);
-                if (response.IsSuccessStatusCode)
-                {
-                    //string content = await response.Content.ReadAsStringAsync();
-                    result = await client.GetFromJsonAsync<List<Item>>(Url);
-                    success = true;
-                }
+                // see: https://stackoverflow.com/questions/65383186/using-httpclient-getfromjsonasync-how-to-handle-httprequestexception-based-on
+                // Method 1
+
+                result = await client.GetFromJsonAsync<List<Item>>(Url);
+                success = true;
+
+                // Method 2
+                //var response = await client.GetAsync(Url);
+                //if (response.IsSuccessStatusCode)
+                //{
+                //    //string content = await response.Content.ReadAsStringAsync();
+                //    //result = await client.GetFromJsonAsync<List<Item>>(Url);
+                //    result = await response.Content.ReadFromJsonAsync<List<Item>>();
+                //    success = true;
+                //}
             }
             catch (Exception ex)
             {
@@ -88,7 +96,6 @@ public static class ItemAPI
                 Item item = new Item() { Name = itemName, Details = null };
                 string json = JsonSerializer.Serialize<Item>(item, _serializerOptions);
                 StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-
                 var response = await client.PostAsync(Url, content);
                 if (response.IsSuccessStatusCode)
                 {
@@ -108,8 +115,30 @@ public static class ItemAPI
         throw new NotImplementedException();
     }
 
-    public static async Task Delete(string itemID)
+    public static async Task<bool> Delete(int itemPK)
     {
-        throw new NotImplementedException();
+        bool success = false;
+        if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+        {
+            await Shell.Current.DisplayAlert("Uh Oh!", "No internet", "OK");
+        }
+        else
+        {
+            try
+            {
+                var client = await GetClient();
+
+                var response = await client.DeleteAsync($"{Url}{itemPK}/");
+                if (response.IsSuccessStatusCode)
+                {
+                    success = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(@"\tERROR {0}", ex.Message);
+            }
+        }
+        return success;
     }
 }
